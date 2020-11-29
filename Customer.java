@@ -1,3 +1,7 @@
+/*
+* Customer.java
+* @author Rose, Thomas, Patrick
+*/
 public class Customer extends Thread{
     Bank banks;
     private int customerNumbers;
@@ -10,7 +14,8 @@ public class Customer extends Thread{
     }//end bank
 
     public void run(){
-        for(int i = 0; i < 4; i++){
+        int i;
+        for(i = 0; i < 4; i++){
             try{
                 synchronized(banks){
                     banks.addCustomer(customerNumbers);           //generate request
@@ -22,14 +27,16 @@ public class Customer extends Thread{
                 Thread.sleep(time *1000);
                 
                 //release resources
-                banks.releaseResources(customerNumbers);
+                
             }catch(Exception e){
                 System.out.println("\nException has been caught");
             }
 
         }
-
-        System.out.println("Thead running");
-        banks.displayFinal();
+       banks.releaseResources(customerNumbers);
+       /**
+        * Issue: Displays more than once sometimes
+        */
+       banks.displayFinal();
     }//end run
 }

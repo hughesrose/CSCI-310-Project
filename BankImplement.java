@@ -1,3 +1,7 @@
+/*
+* BankImplement.java
+* @author Rose, Thomas, Patrick
+*/
 import java.util.Arrays;
 public class BankImplement implements Bank{
     int numOfCustomers;         //number of customers
@@ -42,7 +46,7 @@ public class BankImplement implements Bank{
 
     /**
      * Add a customer and generate random request
-     * customerNumber   -The number of the customer
+     * @param customerNumber
      * 
      * 
      */
@@ -59,7 +63,7 @@ public class BankImplement implements Bank{
         }
     }//end addCustomer
 
-    
+
     /**
      * Output the value of available, maximum,
      * allocation, and need
@@ -101,9 +105,10 @@ public class BankImplement implements Bank{
     }//end getState
 
     /**
-     * Release resources
-     * customerNumber   -The customer releasing resources
+     * Releases resources held by a customer
      * 
+     * @param customerNumber 
+     * @param release
      */
     public synchronized void releaseResources(int customerNumber){
         for(int i = 0; i < numOfResources; i++){
@@ -111,13 +116,15 @@ public class BankImplement implements Bank{
             allocation[customerNumber][i] -= allocation[customerNumber][i];
         }
 
+        System.out.println("Customer " + customerNumber + " has released its resources.");
+
     }//end releaseResources
 
     
     /**
      * calculateNeed
      * Checks to see if customer can get resources
-     * customerNumber -The customer reuqesting resource
+     * @param customerNumber
      */
     public void calculateNeed(int customerNumber){
         for(int i = 0; i < numOfResources; i++){
@@ -129,17 +136,14 @@ public class BankImplement implements Bank{
 
     /**
      * Checks to see if customer can get resources
-     * customerNumber -The customer requesting resource
+     * @param customerNumber
      * 
-     * Returns:
-     *  -True if available >= needs
-     *  -False if available < needs
      */
     public boolean canRun(int customerNumber){
         boolean safeToRun = false;
 
         for(int i = 0; i < numOfResources; i++){
-            if(available[i] <= need[customerNumber][i]){
+            if(need[customerNumber][i] >= available[i]){
                 safeToRun = true;
             }
             else{
@@ -157,11 +161,15 @@ public class BankImplement implements Bank{
      * i              -The cycle the thread is in            
      */
     public void runThread(int customerNumber){
-        if(canRun(customerNumber)){
-            for(int j = 0; j <numOfResources; j++){
-                available[j] += allocation[customerNumber][j];
-            }
+        for(int i = 0; i < numOfResources; i++){
+            //if(need[customerNumber][i] > available[i])
+            if(canRun(customerNumber)){
+            return;
         }
+        for(int j = 0; j <numOfResources; j++){
+            available[j] = available[j] + allocation[customerNumber][j];
+        }
+
     }
 
     /**
