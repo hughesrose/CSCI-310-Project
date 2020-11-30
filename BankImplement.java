@@ -58,9 +58,11 @@ public class BankImplement implements Bank{
         }
 
          //Print request
+        System.out.print("[ ");
          for(int i = 0; i < numOfResources; i++){
             System.out.print(customerRequest[i] + " ");
         }
+        System.out.print("]\n ");
 
         //check if request can happen
         if(!canRun(customerNumber)){
@@ -101,19 +103,21 @@ public class BankImplement implements Bank{
         //outputs allocation
         System.out.println("\nBank - Allocation");
         for(int i = 0; i < numOfCustomers; i++){
+             System.out.print("[ ");
                 for(int j = 0; j < numOfResources; j++){
                     System.out.print(allocation[i][j] + " ");
                 }
-                System.out.println();
+                System.out.print("]\n");
             }
 
         //outputs need
         System.out.println("\nBank - Need");
         for(int i = 0; i < numOfCustomers; i++){
+            System.out.print("[ ");
             for(int j = 0; j < numOfResources; j++){
                 System.out.print(need[i][j] + " ");
             }
-            System.out.println();
+             System.out.print("]\n");
         }
 
     }//end getState
