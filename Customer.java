@@ -15,12 +15,12 @@ public class Customer extends Thread{
 
     public void run(){
         int i;
-        for(i = 0; i < 4; i++){
+        for(i = 0; i < 3; i++){
             try{
                 synchronized(banks){
                     banks.addCustomer(customerNumbers);           //generate request
                     banks.calculateNeed(customerNumbers);         //calculate need
-                    banks.runThread(customerNumbers);
+                    banks.runThread(customerNumbers);             //
                 }
                 //holds resources for a random amount of time (1-5 seconds)
                 int time = (int)(5*Math.random());
@@ -37,6 +37,6 @@ public class Customer extends Thread{
        /**
         * Issue: Displays more than once sometimes
         */
-       banks.displayFinal();
+        banks.displayFinal();
     }//end run
 }

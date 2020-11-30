@@ -26,8 +26,6 @@ public class BankDriver{
             i.start();
         }
 
-        
- 
         scan.close(); // close scanner after using
     }//end main
 }//end BankDriver

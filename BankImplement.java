@@ -52,15 +52,29 @@ public class BankImplement implements Bank{
      */
     public void addCustomer(int customerNumber){
         System.out.println("\nCustomer " + customerNumber + " is making a request.");
+        //generate request
         for(int i = 0; i < numOfResources; i++){
             customerRequest[i] = (int)Math.round(Math.random()*(maximum[customerNumber][i]-minumimDemand)+minumimDemand);
-            allocation[customerNumber][i] = customerRequest[i];
         }
-        
-        //Print request
-        for(int i = 0; i < numOfResources; i++){
+
+         //Print request
+         for(int i = 0; i < numOfResources; i++){
             System.out.print(customerRequest[i] + " ");
         }
+
+        //check if request can happen
+        if(!canRun(customerNumber)){
+            System.out.println("\nCustomer " + customerNumber + " must wait.");
+        }
+        else{
+        for(int i = 0; i < numOfResources; i++){
+            //customerRequest[i] = (int)Math.round(Math.random()*(maximum[customerNumber][i]-minumimDemand)+minumimDemand);
+            available[i] -= customerRequest[i];
+            allocation[customerNumber][i] = customerRequest[i];
+            need[customerNumber][i] = maximum[customerNumber][i] - allocation[customerNumber][i];
+        }
+    }
+
     }//end addCustomer
 
 
@@ -131,7 +145,7 @@ public class BankImplement implements Bank{
             int cusNeed = maximum[customerNumber][i] - allocation[customerNumber][i];
             need[customerNumber][i] = cusNeed = Math.abs(cusNeed);
         }
-        getState();
+        //getState();
     }//end calculateNeed
 
     /**
@@ -140,6 +154,7 @@ public class BankImplement implements Bank{
      * 
      */
     public boolean canRun(int customerNumber){
+/*
         boolean safeToRun = false;
 
         for(int i = 0; i < numOfResources; i++){
@@ -152,6 +167,64 @@ public class BankImplement implements Bank{
             }
         }
         return safeToRun;
+*/
+        //check if enough resources
+        for(int i = 0; i < numOfResources; i++){
+            if(customerRequest[i] > available[i]){
+                return false;
+            }
+        }
+
+        System.out.println("\nCustomer " + customerNumber + " request granted.");
+        //find way to finish requests
+        boolean[] canFinish = new boolean[numOfCustomers];
+        for(int i = 0; i < numOfCustomers; i++){
+            canFinish[i] = false;
+        }
+
+        //copy available
+        int[] tempAvailable = new int[numOfResources];
+        System.arraycopy(available, 0, tempAvailable, 0, available.length);
+
+        for(int i = 0; i < numOfResources; i++){
+            tempAvailable[i] -= customerRequest[i];
+            need[customerNumber][i] -= customerRequest[i];
+            allocation[customerNumber][i] += customerRequest[i];
+        }
+
+        for(int i = 0; i < numOfCustomers; i++){
+            //search for customer request that can be done
+            for(int j = 0; j < numOfCustomers; j++){
+                if(!canFinish[j]){
+                    boolean check = true;
+                    for(int k = 0; k < numOfResources; k++){
+                        if(need[j][k] > tempAvailable[k])
+                            check = false;
+                    }
+                    //if request can be done
+                    if(check){
+                        canFinish[j] = true;
+                        for(int l = 0; l < numOfResources; l++)
+                            tempAvailable[l] += allocation[j][l];
+                    }
+                }
+            }
+        }
+        //get need and allocation for thread
+        for(int i = 0; i < numOfResources; i++){
+            need[customerNumber][i] += customerRequest[i];
+            allocation[customerNumber][i] -= customerRequest[i];
+        }
+
+        //see if all requests could complete
+        boolean value = true;
+        for(int i = 0; i < numOfCustomers; i++) {
+            if(!canFinish[i]){
+                value = false;
+                break;
+            }
+        }
+        return value;
     }//end canRun
 
     /**
@@ -161,16 +234,9 @@ public class BankImplement implements Bank{
      * i              -The cycle the thread is in            
      */
     public void runThread(int customerNumber){
-        for(int i = 0; i < numOfResources; i++){
-            //if(need[customerNumber][i] > available[i])
-            if(canRun(customerNumber)){
-            return;
-        }
-        for(int j = 0; j <numOfResources; j++){
-            available[j] = available[j] + allocation[customerNumber][j];
-        }
-
-    }
+            canRun(customerNumber);
+    getState();
+  }//end runThread
 
     /**
      * Displays Final Available Vector and Final Allocation Matrix
@@ -189,5 +255,6 @@ public class BankImplement implements Bank{
             System.out.println();
         }
     }//end displayFinal
+
 
 }//end BankImplement
